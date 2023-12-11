@@ -1,386 +1,483 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fake User Data Generator</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
 
-        select,
-        input,
-        button {
-            margin-bottom: 10px;
-        }
+      select,
+      input,
+      button {
+        margin-bottom: 10px;
+      }
 
-        .table__wrapper {}
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+      }
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
+      th,
+      td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
 
-        }
-
-        th,
-        td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
+      th {
+        background-color: #f2f2f2;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div>
-        <label for="region">Select Region:</label>
-        <select id="region" onchange="generateData()">
-            <option value="georgia">Georgia</option>
-            <option value="poland">Poland</option>
-            <option value="usa">USA</option>
-        </select>
+      <label for="region">Select Region:</label>
+      <select id="region" onchange="generateData()">
+        <option value="georgia">Georgia</option>
+        <option value="poland">Poland</option>
+        <option value="usa">USA</option>
+      </select>
     </div>
     <div>
-        <label for="errorSlider">Number of Errors per Record:</label>
-        <input type="range" id="errorSlider" min="0" max="10" value="0" oninput="updateErrorNumber()">
-        <input type="number" id="errorNumber" min="0" max="1000" value="0" oninput="updateErrorSlider()">
+      <label for="errorSlider">Number of Errors per Record:</label>
+      <input
+        type="range"
+        id="errorSlider"
+        min="0"
+        max="10"
+        value="0"
+        oninput="updateErrorNumber()" />
+      <input
+        type="number"
+        id="errorNumber"
+        min="0"
+        max="1000"
+        value="0"
+        oninput="updateErrorSlider()" />
     </div>
     <div>
-        <label for="seed">Seed:</label>
-        <input type="text" id="seed" oninput="updateSeed()">
-        <button onclick="generateRandomSeed()">Random Seed</button>
-    </div>
-    <div class="table__wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Index</th>
-                    <th>Random Identifier</th>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Phone</th>
-                </tr>
-            </thead>
-            <tbody id="userData">
-            </tbody>
-        </table>
+      <label for="seed">Seed:</label>
+      <input type="text" id="seed" oninput="updateSeed()" />
+      <button onclick="generateRandomSeed()">Random Seed</button>
     </div>
     <div>
-        <button onclick="exportToCSV()">Export to CSV</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Index</th>
+            <th>Random Identifier</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Phone</th>
+          </tr>
+        </thead>
+        <tbody id="userData"></tbody>
+      </table>
+    </div>
+    <div>
+      <button onclick="exportToCSV()">Export to CSV</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
 
-
     <script>
-        const regionsData = {
-            poland: { language: "Polish", phoneCode: "+48", cities: ["Warsaw", "Krakow", "Gdansk"] },
-            usa: { language: "English", phoneCode: "+1", cities: ["New York", "Los Angeles", "Chicago"] },
-            georgia: { language: "Georgian", phoneCode: "+995", cities: ["Tbilisi", "Batumi", "Kutaisi"] }
+      const regionsData = {
+        poland: {
+          language: "Polish",
+          phoneCode: "+48",
+          cities: ["Warsaw", "Krakow", "Gdansk"],
+        },
+        usa: {
+          language: "English",
+          phoneCode: "+1",
+          cities: ["New York", "Los Angeles", "Chicago"],
+        },
+        georgia: {
+          language: "Georgian",
+          phoneCode: "+995",
+          cities: ["Tbilisi", "Batumi", "Kutaisi"],
+        },
+      };
+
+      const polishFirstNames = ["Jan", "Anna", "Piotr", "Katarzyna", "Andrzej"];
+      const englishFirstNames = ["John", "Mary", "David", "Emily", "Michael"];
+      const georgianFirstNames = [
+        "Giorgi",
+        "Nino",
+        "Irakli",
+        "Mariam",
+        "Tamar",
+      ];
+
+      const polishMiddleNames = [
+        "Aleksander",
+        "Anna",
+        "Krzysztof",
+        "Roza",
+        "Daniel",
+      ];
+      const englishMiddleNames = [
+        "Alexander",
+        "Anne",
+        "Christopher",
+        "Rose",
+        "Daniel",
+      ];
+      const georgianMiddleNames = [
+        "Aleko",
+        "Ana",
+        "Kristepore",
+        "Rozeta",
+        "Davit",
+      ];
+
+      const polishLastNames = [
+        "Nowak",
+        "Kowalski",
+        "Wisniewski",
+        "Wojcik",
+        "Kowalczyk",
+      ];
+      const englishLastNames = [
+        "Smith",
+        "Johnson",
+        "Williams",
+        "Brown",
+        "Jones",
+      ];
+      const georgianLastNames = [
+        "Mchedlishvili",
+        "Kapanadze",
+        "Kakabadze",
+        "Liparteliani",
+        "Ninidze",
+      ];
+
+      const streetsData = {
+        Warsaw: ["Marszałkowska", "Nowy Świat", "Krakowskie Przedmieście"],
+        Krakow: ["Main Square", "Florianska", "Grodzka"],
+        Gdansk: ["Długi Targ", "Mariacka", "Piwna"],
+        "New York": ["Broadway", "Fifth Avenue", "Times Square"],
+        "Los Angeles": [
+          "Hollywood Boulevard",
+          "Rodeo Drive",
+          "Santa Monica Boulevard",
+        ],
+        Chicago: ["Michigan Avenue", "State Street", "Wacker Drive"],
+        Tbilisi: [
+          "Rustaveli Avenue",
+          "Agmashenebeli Avenue",
+          "Chavchavadze Avenue",
+        ],
+        Batumi: [
+          "Sherif Khimshiashvili Street",
+          "Gorgiladze Street",
+          "Ninoshvili Street",
+        ],
+        Kutaisi: [
+          "White Bridge Street",
+          "King Tamar Street",
+          "Meskhishvili Street",
+        ],
+      };
+
+      const batchSize = 10;
+      const initialBatchSize = 20;
+      let currentPage = 1;
+
+      let rng;
+
+      function generateData() {
+        currentPage = 1;
+        rng = createSeededRandomGenerator();
+        loadNextPage(initialBatchSize);
+      }
+
+      function createSeededRandomGenerator() {
+        const userSeed = document.getElementById("seed").value || "defaultSeed";
+        const seed = userSeed + "-" + currentPage;
+
+        const seedNumber = parseInt(CryptoJS.MD5(seed), 16);
+
+        return seedNumber;
+      }
+
+      function loadNextPage(batchSize) {
+        const region = document.getElementById("region").value;
+        const errorCount = parseInt(
+          document.getElementById("errorNumber").value
+        );
+
+        const language = regionsData[region].language;
+        const phoneCode = regionsData[region].phoneCode;
+        const cities = regionsData[region].cities;
+
+        const userData = [];
+        const startIndex = (currentPage - 1) * batchSize + 1;
+        const endIndex = currentPage * batchSize;
+
+        for (let i = startIndex; i <= endIndex; i++) {
+          const firstName = getFirstName(region);
+          const middleName = getMiddleName(region);
+          const lastName = getLastName(region);
+          const fullName = getFullName(
+            firstName,
+            middleName,
+            lastName,
+            language
+          );
+
+          const address = getRandomAddress(cities, language);
+          const phone = getRandomPhone(phoneCode);
+
+          const userDataWithError = applyErrors(
+            fullName,
+            address,
+            phone,
+            errorCount
+          );
+
+          userData.push({
+            index: i,
+            identifier: generateRandomIdentifier(),
+            name: userDataWithError.name,
+            address: userDataWithError.address,
+            phone: userDataWithError.phone,
+          });
+        }
+
+        if (currentPage === 1) {
+          currentPage++;
+          currentPage++;
+        } else {
+          currentPage++;
+        }
+
+        updateTable(userData);
+      }
+
+      function getRandomInt(min, max) {
+        return Math.floor(rng() * (max - min + 1)) + min;
+      }
+
+      function getRandomElement(array, seed) {
+        const index = getRandomInt(0, array.length - 1, seed);
+        return array[index];
+      }
+
+      function getRandomAddress(cities, language) {
+        const city = getRandomElement(cities);
+        const street = getRandomElement(streetsData[city]);
+        const building = getRandomInt(1, 100);
+        const apartment = getRandomInt(1, 20);
+        return language === "Georgian"
+          ? `${city}, ${street}, ${building}`
+          : `${city}, ${street}, ${building}, Apt ${apartment}`;
+      }
+
+      function getFirstName(region) {
+        switch (region) {
+          case "poland":
+            return getRandomElement(polishFirstNames);
+          case "usa":
+            return getRandomElement(englishFirstNames);
+          case "georgia":
+            return getRandomElement(georgianFirstNames);
+          default:
+            return "Unknown";
+        }
+      }
+
+      function getMiddleName(region) {
+        switch (region) {
+          case "poland":
+            return getRandomElement(polishMiddleNames);
+          case "usa":
+            return getRandomElement(englishMiddleNames);
+          case "georgia":
+            return getRandomElement(georgianMiddleNames);
+          default:
+            return "Unknown";
+        }
+      }
+
+      function getLastName(region) {
+        switch (region) {
+          case "poland":
+            return getRandomElement(polishLastNames);
+          case "usa":
+            return getRandomElement(englishLastNames);
+          case "georgia":
+            return getRandomElement(georgianLastNames);
+          default:
+            return "Unknown";
+        }
+      }
+
+      function getRandomPhone(phoneCode) {
+        const randomDigits = Math.floor(Math.random() * 1000000000)
+          .toString()
+          .padStart(9, "0");
+        return `${phoneCode} ${randomDigits}`;
+      }
+
+      function getFullName(firstName, middleName, lastName, language) {
+        return language === "Georgian"
+          ? `${firstName} ${middleName} ${lastName}`
+          : `${firstName} ${middleName.charAt(0)}. ${lastName}`;
+      }
+
+      function updateErrorNumber() {
+        const errorSlider = document.getElementById("errorSlider");
+        const errorNumber = document.getElementById("errorNumber");
+        errorNumber.value = errorSlider.value;
+        generateData();
+      }
+
+      function updateErrorSlider() {
+        const errorSlider = document.getElementById("errorSlider");
+        const errorNumber = document.getElementById("errorNumber");
+        errorSlider.value = errorNumber.value;
+        generateData();
+      }
+
+      function updateSeed() {
+        generateData();
+      }
+
+      function generateRandomSeed() {
+        const seed = Math.floor(Math.random() * 1000000);
+        document.getElementById("seed").value = seed;
+        generateData();
+      }
+
+      function exportToCSV() {
+        const userData = getUserData();
+        const csvContent =
+          "data:text/csv;charset=utf-8," +
+          "Index,Random Identifier,Name,Address,Phone\n" +
+          userData.map((row) => Object.values(row).join(",")).join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "user_data.csv");
+        document.body.appendChild(link);
+        link.click();
+      }
+
+      function getRandomElement(array) {
+        return array[Math.floor(Math.random() * array.length)];
+      }
+
+      function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function generateRandomIdentifier() {
+        return Math.random().toString(36).substr(2, 8);
+      }
+
+      function applyErrors(name, address, phone, errorCount) {
+        let userDataWithError = {
+          name,
+          address,
+          phone,
         };
 
-        const polishFirstNames = ["Jan", "Anna", "Piotr", "Katarzyna", "Andrzej"];
-        const englishFirstNames = ["John", "Mary", "David", "Emily", "Michael"];
-        const georgianFirstNames = ["Giorgi", "Nino", "Irakli", "Mariam", "Tamar"];
-
-        const polishMiddleNames = ["Aleksander", "Anna", "Krzysztof", "Roza", "Daniel"];
-        const englishMiddleNames = ["Alexander", "Anne", "Christopher", "Rose", "Daniel"];
-        const georgianMiddleNames = ["Aleko", "Ana", "Kristepore", "Rozeta", "Davit"];
-
-        const polishLastNames = ["Nowak", "Kowalski", "Wisniewski", "Wojcik", "Kowalczyk"];
-        const englishLastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones"];
-        const georgianLastNames = ["Mchedlishvili", "Kapanadze", "Kakabadze", "Liparteliani", "Ninidze"];
-
-        const streetsData = {
-            Warsaw: ["Marszałkowska", "Nowy Świat", "Krakowskie Przedmieście"],
-            Krakow: ["Main Square", "Florianska", "Grodzka"],
-            Gdansk: ["Długi Targ", "Mariacka", "Piwna"],
-            "New York": ["Broadway", "Fifth Avenue", "Times Square"],
-            "Los Angeles": ["Hollywood Boulevard", "Rodeo Drive", "Santa Monica Boulevard"],
-            Chicago: ["Michigan Avenue", "State Street", "Wacker Drive"],
-            Tbilisi: ["Rustaveli Avenue", "Agmashenebeli Avenue", "Chavchavadze Avenue"],
-            Batumi: ["Sherif Khimshiashvili Street", "Gorgiladze Street", "Ninoshvili Street"],
-            Kutaisi: ["White Bridge Street", "King Tamar Street", "Meskhishvili Street"],
-        };
-
-        const batchSize = 10;
-        const initialBatchSize = 20;
-        let currentPage = 1;
-
-        let rng;
-
-        function generateData() {
-            currentPage = 1;
-            rng = createSeededRandomGenerator();
-            loadNextPage(initialBatchSize);
+        for (let i = 0; i < errorCount; i++) {
+          const randomErrorType = getRandomInt(1, 3);
+          switch (randomErrorType) {
+            case 1:
+              userDataWithError = deleteRandomCharacter(userDataWithError);
+              break;
+            case 2:
+              userDataWithError = addRandomCharacter(userDataWithError);
+              break;
+            case 3:
+              userDataWithError = swapNearCharacters(userDataWithError);
+              break;
+          }
         }
 
-        function createSeededRandomGenerator() {
-            const userSeed = document.getElementById("seed").value || "defaultSeed";
-            const seed = userSeed + '-' + currentPage;
+        return userDataWithError;
+      }
 
-            const seedNumber = parseInt(CryptoJS.MD5(seed), 16);
+      function deleteRandomCharacter(userData) {
+        const randomPosition = getRandomInt(0, userData.name.length - 1);
+        userData.name =
+          userData.name.substring(0, randomPosition) +
+          userData.name.substring(randomPosition + 1);
+        return userData;
+      }
 
-            return seedNumber;
-        }
+      function addRandomCharacter(userData) {
+        const randomPosition = getRandomInt(0, userData.name.length);
+        const randomCharacter = String.fromCharCode(getRandomInt(97, 122));
+        userData.name =
+          userData.name.substring(0, randomPosition) +
+          randomCharacter +
+          userData.name.substring(randomPosition);
+        return userData;
+      }
 
-        function loadNextPage(batchSize) {
-            const region = document.getElementById("region").value;
-            const errorCount = parseInt(document.getElementById("errorNumber").value);
+      function swapNearCharacters(userData) {
+        const randomPosition = getRandomInt(0, userData.name.length - 2);
+        userData.name =
+          userData.name.substring(0, randomPosition) +
+          userData.name.charAt(randomPosition + 1) +
+          userData.name.charAt(randomPosition) +
+          userData.name.substring(randomPosition + 2);
+        return userData;
+      }
 
-            const language = regionsData[region].language;
-            const phoneCode = regionsData[region].phoneCode;
-            const cities = regionsData[region].cities;
+      function updateTable(userData) {
+        const tableBody = document.getElementById("userData");
+        userData.length === 20 && (tableBody.innerHTML = "");
+        userData.forEach((row) => {
+          const newRow = document.createElement("tr");
+          newRow.innerHTML = `<td>${row.index}</td><td>${row.identifier}</td><td>${row.name}</td><td>${row.address}</td><td>${row.phone}</td>`;
+          tableBody.appendChild(newRow);
+        });
+      }
 
-            const userData = [];
-            const startIndex = (currentPage - 1) * batchSize + 1;
-            const endIndex = currentPage * batchSize;
+      function getUserData() {
+        const tableBody = document.getElementById("userData");
+        const rows = tableBody.querySelectorAll("tr");
+        const userData = [];
 
-            for (let i = startIndex; i <= endIndex; i++) {
-                const firstName = getFirstName(region);
-                const middleName = getMiddleName(region);
-                const lastName = getLastName(region);
-                const fullName = getFullName(firstName, middleName, lastName, language);
-
-                const address = getRandomAddress(cities, language);
-                const phone = getRandomPhone(phoneCode);
-
-                const userDataWithError = applyErrors(fullName, address, phone, errorCount);
-
-                userData.push({
-                    index: i,
-                    identifier: generateRandomIdentifier(),
-                    name: userDataWithError.name,
-                    address: userDataWithError.address,
-                    phone: userDataWithError.phone,
-                });
-            }
-
-            if (currentPage === 1) {
-                currentPage++;
-                currentPage++;
-            } else {
-                currentPage++;
-            }
-
-            updateTable(userData);
-        }
-
-
-        function getRandomInt(min, max) {
-            return Math.floor(rng() * (max - min + 1)) + min;
-        }
-
-        function getRandomElement(array, seed) {
-            const index = getRandomInt(0, array.length - 1, seed);
-            return array[index];
-        }
-
-        function getRandomAddress(cities, language) {
-            const city = getRandomElement(cities);
-            const street = getRandomElement(streetsData[city]);
-            const building = getRandomInt(1, 100);
-            const apartment = getRandomInt(1, 20);
-            return language === "Georgian" ? `${city}, ${street}, ${building}` : `${city}, ${street}, ${building}, Apt ${apartment}`;
-        }
-
-        function getFirstName(region) {
-            switch (region) {
-                case "poland":
-                    return getRandomElement(polishFirstNames);
-                case "usa":
-                    return getRandomElement(englishFirstNames);
-                case "georgia":
-                    return getRandomElement(georgianFirstNames);
-                default:
-                    return "Unknown";
-            }
-        }
-
-        function getMiddleName(region) {
-            switch (region) {
-                case "poland":
-                    return getRandomElement(polishMiddleNames);
-                case "usa":
-                    return getRandomElement(englishMiddleNames);
-                case "georgia":
-                    return getRandomElement(georgianMiddleNames);
-                default:
-                    return "Unknown";
-            }
-        }
-
-        function getLastName(region) {
-            switch (region) {
-                case "poland":
-                    return getRandomElement(polishLastNames);
-                case "usa":
-                    return getRandomElement(englishLastNames);
-                case "georgia":
-                    return getRandomElement(georgianLastNames);
-                default:
-                    return "Unknown";
-            }
-        }
-
-        function getRandomPhone(phoneCode) {
-            const randomDigits = Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
-            return `${phoneCode} ${randomDigits}`;
-        }
-
-        function getFullName(firstName, middleName, lastName, language) {
-            return language === "Georgian" ? `${firstName} ${middleName} ${lastName}` : `${firstName} ${middleName.charAt(0)}. ${lastName}`;
-        }
-
-        function updateErrorNumber() {
-            const errorSlider = document.getElementById("errorSlider");
-            const errorNumber = document.getElementById("errorNumber");
-            errorNumber.value = errorSlider.value;
-            generateData();
-        }
-
-        function updateErrorSlider() {
-            const errorSlider = document.getElementById("errorSlider");
-            const errorNumber = document.getElementById("errorNumber");
-            errorSlider.value = errorNumber.value;
-            generateData();
-        }
-
-        function updateSeed() {
-            generateData();
-        }
-
-        function generateRandomSeed() {
-            const seed = Math.floor(Math.random() * 1000000);
-            document.getElementById("seed").value = seed;
-            generateData();
-        }
-
-        function exportToCSV() {
-            const userData = getUserData();
-            const csvContent = "data:text/csv;charset=utf-8," +
-                "Index,Random Identifier,Name,Address,Phone\n" +
-                userData.map(row => Object.values(row).join(',')).join('\n');
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "user_data.csv");
-            document.body.appendChild(link);
-            link.click();
-        }
-
-        function getRandomElement(array) {
-            return array[Math.floor(Math.random() * array.length)];
-        }
-
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        function generateRandomIdentifier() {
-            return Math.random().toString(36).substr(2, 8);
-        }
-
-        function applyErrors(name, address, phone, errorCount) {
-            let userDataWithError = {
-                name,
-                address,
-                phone,
-            };
-
-            for (let i = 0; i < errorCount; i++) {
-                const randomErrorType = getRandomInt(1, 3);
-                switch (randomErrorType) {
-                    case 1:
-                        userDataWithError = deleteRandomCharacter(userDataWithError);
-                        break;
-                    case 2:
-                        userDataWithError = addRandomCharacter(userDataWithError);
-                        break;
-                    case 3:
-                        userDataWithError = swapNearCharacters(userDataWithError);
-                        break;
-                }
-            }
-
-            return userDataWithError;
-        }
-
-        function deleteRandomCharacter(userData) {
-            const randomPosition = getRandomInt(0, userData.name.length - 1);
-            userData.name = userData.name.substring(0, randomPosition) + userData.name.substring(randomPosition + 1);
-            return userData;
-        }
-
-        function addRandomCharacter(userData) {
-            const randomPosition = getRandomInt(0, userData.name.length);
-            const randomCharacter = String.fromCharCode(getRandomInt(97, 122));
-            userData.name = userData.name.substring(0, randomPosition) + randomCharacter + userData.name.substring(randomPosition);
-            return userData;
-        }
-
-        function swapNearCharacters(userData) {
-            const randomPosition = getRandomInt(0, userData.name.length - 2);
-            userData.name =
-                userData.name.substring(0, randomPosition) +
-                userData.name.charAt(randomPosition + 1) +
-                userData.name.charAt(randomPosition) +
-                userData.name.substring(randomPosition + 2);
-            return userData;
-        }
-
-        function updateTable(userData) {
-            const tableBody = document.getElementById("userData");
-            userData.length === 20 && (tableBody.innerHTML = "");
-            userData.forEach(row => {
-                const newRow = document.createElement("tr");
-                newRow.innerHTML = `<td>${row.index}</td><td>${row.identifier}</td><td>${row.name}</td><td>${row.address}</td><td>${row.phone}</td>`;
-                tableBody.appendChild(newRow)
-            });
-        }
-
-        function getUserData() {
-            const tableBody = document.getElementById("userData");
-            const rows = tableBody.querySelectorAll("tr");
-            const userData = [];
-
-            rows.forEach(row => {
-                const cells = row.querySelectorAll("td");
-                userData.push({
-                    index: cells[0].innerText,
-                    identifier: cells[1].innerText,
-                    name: cells[2].innerText,
-                    address: cells[3].innerText,
-                    phone: cells[4].innerText,
-                });
-            });
-
-            return userData;
-        }
-
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-                loadNextPage(batchSize);
-            }
+        rows.forEach((row) => {
+          const cells = row.querySelectorAll("td");
+          userData.push({
+            index: cells[0].innerText,
+            identifier: cells[1].innerText,
+            name: cells[2].innerText,
+            address: cells[3].innerText,
+            phone: cells[4].innerText,
+          });
         });
 
-        generateData();
+        return userData;
+      }
+
+      window.addEventListener("scroll", () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+          loadNextPage(batchSize);
+        }
+      });
+
+      generateData();
     </script>
-
-</body>
-
+  </body>
 </html>
