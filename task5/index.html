@@ -1,97 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fake User Data Generator</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
 
-      label {
-        display: block;
-        margin-bottom: 5px;
-      }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
 
-      select,
-      input,
-      button {
-        margin-bottom: 10px;
-      }
+        select,
+        input,
+        button {
+            margin-bottom: 10px;
+        }
 
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-top: 20px;
-      }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
 
-      th,
-      td {
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-      }
+        th,
+        td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
 
-      th {
-        background-color: #f2f2f2;
-      }
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <div>
-      <label for="region">Select Region:</label>
-      <select id="region" onchange="generateData()">
-        <option value="georgia">Georgia</option>
-        <option value="poland">Poland</option>
-        <option value="usa">USA</option>
-      </select>
+        <label for="region">Select Region:</label>
+        <select id="region" onchange="generateData()">
+            <option value="georgia">Georgia</option>
+            <option value="poland">Poland</option>
+            <option value="usa">USA</option>
+        </select>
     </div>
     <div>
-      <label for="errorSlider">Number of Errors per Record:</label>
-      <input
-        type="range"
-        id="errorSlider"
-        min="0"
-        max="10"
-        value="0"
-        oninput="updateErrorNumber()" />
-      <input
-        type="number"
-        id="errorNumber"
-        min="0"
-        max="1000"
-        value="0"
-        oninput="updateErrorSlider()" />
+        <label for="errorSlider">Number of Errors per Record:</label>
+        <input type="range" id="errorSlider" min="0" max="10" value="0" oninput="updateErrorNumber()" />
+        <input type="number" id="errorNumber" min="0" max="1000" value="0" oninput="updateErrorSlider()" />
     </div>
     <div>
-      <label for="seed">Seed:</label>
-      <input type="text" id="seed" oninput="updateSeed()" />
-      <button onclick="generateRandomSeed()">Random Seed</button>
+        <label for="seed">Seed:</label>
+        <input type="text" id="seed" oninput="updateSeed()" />
+        <button onclick="generateRandomSeed()">Random Seed</button>
     </div>
     <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Index</th>
-            <th>Random Identifier</th>
-            <th>Name</th>
-            <th>Address</th>
-            <th>Phone</th>
-          </tr>
-        </thead>
-        <tbody id="userData"></tbody>
-      </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Random Identifier</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+            <tbody id="userData"></tbody>
+        </table>
     </div>
     <div>
-      <button onclick="exportToCSV()">Export to CSV</button>
+        <button onclick="exportToCSV()">Export to CSV</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
 
     <script src="./main.js"></script>
-  </body>
+</body>
+
 </html>
