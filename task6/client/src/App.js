@@ -79,6 +79,11 @@ function App() {
   return (
     <div className="App">
       <div className="App-container">
+        {activeBoard.id && (<button onClick={() => setActiveBoard({})}>
+          Go Back
+          <br />
+          Boards List
+        </button>)}
         {!activeBoard.id && (<div className="App-board-list">
           <BoardList boards={boards} joinBoard={joinBoard} />
         </div>)}
