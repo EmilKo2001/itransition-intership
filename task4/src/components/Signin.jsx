@@ -20,11 +20,10 @@ export default function Signin() {
       const q = query(colRef, where("email", "==", email));
 
       const getUser = async () => {
-        await getDocs(q)
+        return await getDocs(q)
           .then((res) => {
             if (res.size > 0) {
               const user = res.docs[0].data();
-              console.log("user.status", user.status);
               if (user.status === "blocked") {
                 setError("The user is blocked");
                 return false;
@@ -58,7 +57,7 @@ export default function Signin() {
         <p className="py-2">
           Don't have an account yet?{" "}
           <Link to="/signup" className="underline">
-            Sign Up.
+            Sign Up
           </Link>
         </p>
       </div>
