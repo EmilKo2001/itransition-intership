@@ -49,7 +49,7 @@ export default function Singup() {
         <p className="py-2">
           Already have an account yet?{" "}
           <Link to="/" className="underline">
-            Sigh In.
+            Sign In.
           </Link>
         </p>
       </div>
