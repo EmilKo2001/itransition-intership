@@ -1,0 +1,45 @@
+table,
+th,
+td {
+  border: 1px solid black;
+}
+.account-content {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  padding: 0 60px;
+}
+
+.account {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  gap: 4px;
+}
+
+.user-table {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.user-table__block {
+  border: 1px solid black;
+  padding: 4px 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.user-table__unblock {
+  border: 1px solid black;
+  padding: 4px 10px;
+}
+
+.user-table__delete {
+  border: 1px solid black;
+  background: rgb(177, 78, 78);
+  padding: 4px 10px;
+}
